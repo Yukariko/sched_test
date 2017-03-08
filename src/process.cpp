@@ -39,17 +39,28 @@ int Process::processJob(int timeSlice)
     return spentTime;
 }
 
-ProcessState Process::run(int timeSlice, int clock)
+ProcessState Process::updateState()
+{
+    if (runtime >= necessaryTime)
+        return ps = EXIT;
+    if (interruptTime > 0)
+        return ps = INTERRUPT;
+    return ps = READY;
+}
+
+void Process::updateClock(int clock)
 {
     int diffTime = clock - updatedClock;
     if (interruptTime > 0)
-    {
         interruptTime = std::max(0, interruptTime - diffTime);
-    }
-
     updatedClock = clock;
+}
+
+ProcessState Process::run(int timeSlice, int clock)
+{
+    updateClock(clock);
     modTime = timeSlice;
-    while(modTime > 0 && runtime < necessaryTime)
+    while(modTime > 0 && ps != EXIT)
     {
         int spentTime = processJob(modTime);        
         modTime -= spentTime;
@@ -58,14 +69,12 @@ ProcessState Process::run(int timeSlice, int clock)
         if (jobTime == 0)
         {
             chooseJob();
-            if (interruptTime > 0)
-                return ps = INTERRUPT;
+            updateState();
+            if (ps != READY)
+                return ps;
         }
     }
-
-    if (runtime >= necessaryTime)
-        return ps = EXIT;
-    return ps = READY;
+    return ps;
 }
 
 void Process::chooseJob()
@@ -113,8 +122,10 @@ int Process::getRuntime()
     return runtime;
 }
 
-ProcessState Process::getProcessState()
+ProcessState Process::getState(int clock)
 {
+    updateClock(clock);
+    updateState();
     return ps;
 }
 

@@ -17,6 +17,7 @@ public:
 
     int getModTime(int id);
     int getRuntime();
+    ProcessState getState(int id);
     double getFairness();
 
 private:

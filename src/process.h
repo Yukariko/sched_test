@@ -13,13 +13,16 @@ public:
     int processJob(int timeSlice);
 
     void setCpu(int cpu);
+    void updateClock(int clock);
+    ProcessState updateState();
+
     int getId();
     int getCpu();
     int getInterruptTime();
     int getModTime();
     int getClock();
     int getRuntime();
-    ProcessState getProcessState();
+    ProcessState getState(int clock);
 
 private:
     void chooseJob();

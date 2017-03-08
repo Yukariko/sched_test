@@ -86,3 +86,8 @@ double SchedTest::getFairness()
     fairness = 1. - fairness;
     return fairness;
 }
+
+ProcessState SchedTest::getState(int id)
+{
+    return procs[id].getState(runtime);
+}
