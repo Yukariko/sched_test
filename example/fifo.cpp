@@ -1,4 +1,6 @@
 #include <cstdio>
+#include <algorithm>
+#include <list>
 #include "sched_test.h"
 
 /*
@@ -9,24 +11,32 @@
 int main(int argc, char **argv)
 {
     int ncpu = 1;
-    int nproc = 30;
-    int timeSlice = 30;
+    int nproc = 10;
+    int timeSlice = 3000;
     int runtime = 0;
-    int np = 30;
 
     SchedTest st(ncpu);
+    std::list<int> procs;
     for(int iproc = 0; iproc < nproc; iproc++)
-        st.createProcess(0);
+        procs.push_back(st.createProcess(0));
 
-    for(int iproc = 0; iproc < nproc; iproc++)
+    while(!procs.empty())
     {
-        ProcessState ps = READY;
-        while(ps != EXIT)
+        for(auto it = procs.begin(); it != procs.end(); it++)
         {
-            st.setCpu(iproc, 0);
-            ps = st.commit(0, timeSlice);
+            st.setFirst(*it, timeSlice);
+            auto ret = st.commit();
+
+            if(ret.second == EXIT)
+            {
+                it = procs.erase(it);
+            }
         }
+        printf("fairness : %.2f%%\n", st.getFairness() * 100);
+        printf("runtime : %d\n", st.getRuntime());
     }
+
+
 
     printf("runtime : %d\n", st.getRuntime());
     return 0;
