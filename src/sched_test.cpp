@@ -44,7 +44,7 @@ std::pair<int, ProcessState> SchedTest::commit()
     int minTimeSliceCpu = timeSlices.begin()->first.second;
     int minTimeSlice = timeSlices.begin()->first.first - runtime;
 
-    ProcessState ret = cpus[minTimeSliceCpu].commit();
+    ProcessState ret = cpus[minTimeSliceCpu].commit(runtime);
     nContextSwitch++;
     runtime += minTimeSlice - procs[proc].getModTime();
     timeSlices.erase(timeSlices.begin());

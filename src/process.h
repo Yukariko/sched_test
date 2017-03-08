@@ -9,7 +9,7 @@ public:
     Process() {}
     Process(const Process& proc);
     Process(int id, int cpu);
-    ProcessState run(int timeSlice);
+    ProcessState run(int timeSlice, int clock);
     int processJob(int timeSlice);
 
     void setCpu(int cpu);

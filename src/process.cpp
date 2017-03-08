@@ -39,14 +39,21 @@ int Process::processJob(int timeSlice)
     return spentTime;
 }
 
-ProcessState Process::run(int timeSlice)
+ProcessState Process::run(int timeSlice, int clock)
 {
-    //updatedClock = clock;
+    int diffTime = clock - updatedClock;
+    if (interruptTime > 0)
+    {
+        interruptTime = std::max(0, interruptTime - diffTime);
+    }
+
+    updatedClock = clock;
     modTime = timeSlice;
     while(modTime > 0 && runtime < necessaryTime)
     {
         int spentTime = processJob(modTime);        
         modTime -= spentTime;
+        updatedClock += spentTime;
 
         if (jobTime == 0)
         {

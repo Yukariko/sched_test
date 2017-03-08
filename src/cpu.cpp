@@ -17,9 +17,9 @@ void Cpu::setFirst(Process* proc, int timeSlice)
     this->timeSlice = timeSlice;
 }
 
-ProcessState Cpu::commit()
+ProcessState Cpu::commit(int runtime)
 {
-    ProcessState ps = firstNode->run(timeSlice);
+    ProcessState ps = firstNode->run(timeSlice, runtime);
     int spentTime = 0;
 
     if (ps == READY)

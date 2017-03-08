@@ -12,7 +12,7 @@ public:
     void insert(Process* proc);
     void remove(Process* proc);
     void setFirst(Process* proc, int timeSlice);
-    ProcessState commit();
+    ProcessState commit(int runtime);
     int getRuntime();
     int getTimeSlice();
 
