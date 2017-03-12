@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <algorithm>
 #include <list>
 #include "sched_test.h"
 
@@ -11,9 +10,19 @@
 int main(int argc, char **argv)
 {
     int ncpu = 1;
-    int nproc = 10;
+    int nproc;
     int timeSlice = 30;
-    int runtime = 0;
+
+    if(argc < 2)
+    {
+        printf("Usage: %s nproc [timeslice=%d]\n", argv[0], timeSlice);
+        return 0;
+    }
+
+    nproc = atoi(argv[1]);
+
+    if(argc == 3)
+        timeSlice = atoi(argv[2]);
 
     SchedTest st(ncpu);
     std::list<int> procs;
@@ -25,16 +34,25 @@ int main(int argc, char **argv)
         int select = -1;
         for(auto it = procs.begin(); it != procs.end(); it++)
         {
-            if (st.getState(*it) == INTERRUPT)
-                continue;
-            select = *it;
-            st.setFirst(*it, timeSlice);
-            auto ret = st.commit();
-
-            if(ret.second == EXIT)
+            ProcessState ps = st.getState(*it);
+            if(ps == READY)
+                select = 1;
+            while(ps == READY)
             {
-                it = procs.erase(it);
+                st.setFirst(*it, timeSlice);
+                auto ret = st.commit();
+
+                int proc = ret.first;
+                ps = ret.second;
+                if(ps == EXIT)
+                {
+                    procs.erase(it--);
+                }
+                printf("ps : %d\n", ps);
             }
+
+            printf("fairness : %.2f%%\n", st.getFairness() * 100);
+            printf("runtime : %d\n", st.getRuntime());
         }
 
         if (select == -1)
@@ -47,10 +65,7 @@ int main(int argc, char **argv)
                 procs.erase(procs.begin());
             }
         }
-        printf("fairness : %.2f%%\n", st.getFairness() * 100);
-        printf("runtime : %d\n", st.getRuntime());
     }
-
 
 
     printf("runtime : %d\n", st.getRuntime());

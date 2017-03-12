@@ -9,9 +9,19 @@
 int main(int argc, char **argv)
 {
     int ncpu = 1;
-    int nproc = 10;
-    int timeSlice = 3000;
-    int runtime = 0;
+    int nproc;
+    int timeSlice = 100000;
+
+    if(argc < 2)
+    {
+        printf("Usage: %s nproc\n", argv[0]);
+        return 0;
+    }
+
+    nproc = atoi(argv[1]);
+
+    if(argc == 3)
+        timeSlice = atoi(argv[2]);
 
     SchedTest st(ncpu);
     for(int iproc = 0; iproc < nproc; iproc++)
@@ -27,7 +37,7 @@ int main(int argc, char **argv)
 
             int proc = ret.first;
             ps = ret.second;
-            printf("ps : %d\n", ps);
+            printf("ps : %d\n", (int)ps);
         }
         printf("fairness : %.2f%%\n", st.getFairness() * 100);
         printf("runtime : %d\n", st.getRuntime());
