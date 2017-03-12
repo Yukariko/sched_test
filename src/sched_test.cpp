@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 #include <climits>
 #include "sched_test.h"
 
@@ -79,11 +80,12 @@ double SchedTest::getFairness()
     for(int iproc = 0; iproc < counter; iproc++)
     {
         int clock = procs[iproc].getRuntime();
-        fairness = std::max(fairness, std::abs(clock - meanClock));
+        fairness += (clock - meanClock) * (clock - meanClock);
     }
     
-    fairness = fairness / sumClock;
-    fairness = 1. - fairness;
+    fairness = sqrt(fairness);
+    fairness /= sumClock;
+    fairness = 1.0 - fairness;
     return fairness;
 }
 
