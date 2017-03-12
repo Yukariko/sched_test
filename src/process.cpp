@@ -26,6 +26,7 @@ Process::Process(int id, int cpu)
     this->cpu = cpu;
     necessaryTime = 1000;
     chooseJob();
+    updateState();
 }
 
 int Process::processJob(int timeSlice)
