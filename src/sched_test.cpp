@@ -96,3 +96,8 @@ int SchedTest::getContextSwitch()
 {
     return nContextSwitch;
 }
+
+int SchedTest::getCpu(int proc)
+{
+    return procs[proc].getCpu();
+}

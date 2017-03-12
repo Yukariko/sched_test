@@ -20,6 +20,7 @@ public:
     ProcessState getState(int id);
     double getFairness();
     int getContextSwitch();
+    int getCpu(int proc);
 
 private:
     std::vector<Cpu> cpus;
