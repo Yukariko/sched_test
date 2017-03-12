@@ -19,6 +19,7 @@ public:
     int getRuntime();
     ProcessState getState(int id);
     double getFairness();
+    int getContextSwitch();
 
 private:
     std::vector<Cpu> cpus;

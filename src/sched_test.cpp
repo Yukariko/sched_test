@@ -91,3 +91,8 @@ ProcessState SchedTest::getState(int id)
 {
     return procs[id].getState(runtime);
 }
+
+int SchedTest::getContextSwitch()
+{
+    return nContextSwitch;
+}
