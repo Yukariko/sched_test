@@ -1,0 +1,6 @@
+[2017 03-12]
+
+context switch 계산 점검
+timeslice max 값 조정
+fairness 수정
+process 수치 수정
