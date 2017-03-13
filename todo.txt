@@ -1,6 +1,11 @@
 [2017 03-12]
 
-context switch °è»ê Á¡°Ë
-timeslice max °ª Á¶Á¤
-fairness ¼öÁ¤
-process ¼öÄ¡ ¼öÁ¤
+context switch
+timeslice max
+fairness
+[v] process
+
+[2017 03-13]
+
+ì¸í„°ëŸ½íŠ¸ ìƒíƒœì—ì„œë„ ì‹¤í–‰ì‹œí‚¤ëŠ” ê²½ìš°
+runtimeì´ ì¦ê°€í•˜ëŠ”ê²ƒì´ íƒ€ë‹¹í•œê°€? : ìš°ì„  ì¦ê°€í‚¤ë¡œ
