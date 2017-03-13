@@ -9,12 +9,12 @@ SchedTest::SchedTest(int ncpu)
     cpus.resize(ncpu);
 }
 
-int SchedTest::createProcess(int cpu)
+int SchedTest::createProcess(int cpu, int interruptRate)
 {
     if(ncpu <= cpu)
         return -1;
 
-    procs.push_back(Process(counter, cpu));
+    procs.push_back(Process(counter, cpu, interruptRate));
     cpus[cpu].insert(&procs.back());
     
     return counter++;
@@ -36,26 +36,23 @@ void SchedTest::setFirst(int id, int timeSlice)
 {
     int cpu = procs[id].getCpu();
     cpus[cpu].setFirst(&procs[id], timeSlice);
-    timeSlices[{runtime + timeSlice, cpu}] = id;
+    timeSlices[{runtime + timeSlice, cpu}] = {id, runtime};
 }
 
 std::pair<int, ProcessState> SchedTest::commit()
 {
-    int proc = timeSlices.begin()->second;
+    int clock = timeSlices.begin()->second.second;
+    int proc = timeSlices.begin()->second.first;
     int minTimeSliceCpu = timeSlices.begin()->first.second;
     int minTimeSlice = timeSlices.begin()->first.first - runtime;
 
-    ProcessState ret = cpus[minTimeSliceCpu].commit(runtime);
+    ProcessState ret = cpus[minTimeSliceCpu].commit(clock);
     nContextSwitch++;
     runtime += minTimeSlice - procs[proc].getModTime();
     timeSlices.erase(timeSlices.begin());
     return {proc, ret};
 }
 
-int SchedTest::getModTime(int id)
-{
-    return procs[id].getModTime();
-}
 
 int SchedTest::getRuntime()
 {

@@ -10,12 +10,11 @@ class SchedTest
 {
 public:
     SchedTest(int ncpu = 1);
-    int createProcess(int cpu = 0);
+    int createProcess(int cpu = 0, int interruptRate = 5);
     std::pair<int, ProcessState> commit();
     void changeCpu(int id, int cpu = 0);
     void setFirst(int id, int timeSlice);
 
-    int getModTime(int id);
     int getRuntime();
     ProcessState getState(int id);
     double getFairness();
@@ -25,7 +24,7 @@ public:
 private:
     std::vector<Cpu> cpus;
     std::vector<Process> procs;
-    std::map<std::pair<int, int>, int> timeSlices;
+    std::map<std::pair<int, int>, std::pair<int, int>> timeSlices;
     int ncpu;
     int counter = 0;
     int runtime = 0;

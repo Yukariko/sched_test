@@ -11,7 +11,9 @@ Process::Process(const Process& proc)
     jobTime = proc.jobTime;
     interruptTime = proc.interruptTime;
     modTime = proc.modTime;
+    deferredTime = proc.deferredTime;
     ps = proc.ps;
+    interruptRate = proc.interruptRate;
 }
 
 /*
@@ -20,29 +22,32 @@ Process::Process(const Process& proc)
  * 각 작업에는 소요되는 시간이 명세되어야 할 것으로 보임
  */
 
-Process::Process(int id, int cpu)
+Process::Process(int id, int cpu, int interruptRate)
 {
     this->id = id;
     this->cpu = cpu;
+    this->interruptRate = interruptRate;
     necessaryTime = 1000;
-    chooseJob();
-    updateState();
 }
 
 int Process::processJob(int timeSlice)
 {
     int spentTime = std::min(std::min(jobTime, timeSlice),
-                            necessaryTime - runtime);
+                            necessaryTime - runtime - deferredTime);
     jobTime -= spentTime;
-    if (interruptTime == 0)
-        runtime += spentTime;
+    runtime += spentTime;
+    updatedClock += spentTime;
 
+    if (ps == INTERRUPT)
+    {
+        interruptTime = std::max(0, interruptTime - spentTime);
+    }
     return spentTime;
 }
 
 ProcessState Process::updateState()
 {
-    if (runtime >= necessaryTime)
+    if (runtime + deferredTime >= necessaryTime)
         return ps = EXIT;
     if (interruptTime > 0)
         return ps = INTERRUPT;
@@ -51,9 +56,13 @@ ProcessState Process::updateState()
 
 void Process::updateClock(int clock)
 {
-    int diffTime = clock - updatedClock;
     if (interruptTime > 0)
+    {
+        int diffTime = clock - updatedClock;
+        deferredTime += std::min(interruptTime, diffTime);
+        jobTime = std::max(0, jobTime - std::min(interruptTime, diffTime));
         interruptTime = std::max(0, interruptTime - diffTime);
+    }
     updatedClock = clock;
 }
 
@@ -65,12 +74,10 @@ ProcessState Process::run(int timeSlice, int clock)
     {
         int spentTime = processJob(modTime);        
         modTime -= spentTime;
-        updatedClock += spentTime;
 
         if (jobTime == 0)
         {
             chooseJob();
-            updateState();
             if (ps != READY)
                 return ps;
         }
@@ -80,16 +87,24 @@ ProcessState Process::run(int timeSlice, int clock)
 
 void Process::chooseJob()
 {
+    if (runtime + deferredTime >= necessaryTime)
+    {
+        ps = EXIT;
+        return;
+    }
+
     int r = rand() % 100;
-    if (r < 5)
+    if (r < interruptRate)
     {
         interruptTime = 100;
         jobTime = 100;
+        ps = INTERRUPT;
     }
     else
     {
         interruptTime = 0;
-        jobTime = 100;        
+        jobTime = 100;
+        ps = READY;
     }
 }
 
@@ -106,11 +121,6 @@ void Process::setCpu(int cpu)
 int Process::getCpu()
 {
     return cpu;
-}
-
-int Process::getModTime()
-{
-    return modTime;
 }
 
 int Process::getClock()
@@ -133,4 +143,9 @@ ProcessState Process::getState(int clock)
 int Process::getId()
 {
     return id;
+}
+
+int Process::getModTime()
+{
+    return modTime;
 }

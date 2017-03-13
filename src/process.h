@@ -8,7 +8,7 @@ class Process
 public:
     Process() {}
     Process(const Process& proc);
-    Process(int id, int cpu);
+    Process(int id, int cpu, int interruptRate = 5);
     ProcessState run(int timeSlice, int clock);
     int processJob(int timeSlice);
 
@@ -27,14 +27,16 @@ public:
 private:
     void chooseJob();
 
-    int cpu = -1;
+    int cpu;
     int id;
     int necessaryTime;
     int runtime = 0;
-    int jobTime;
+    int jobTime = 0;
     int interruptTime = 0;
-    int modTime = 0;
     int updatedClock = 0;
+    int modTime;
+    int deferredTime = 0;
+    int interruptRate;
     ProcessState ps;
 };
 
