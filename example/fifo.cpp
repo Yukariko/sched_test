@@ -11,23 +11,24 @@ int main(int argc, char **argv)
 {
     int ncpu = 1;
     int nproc;
-    int timeSlice = 30;
+    int timeSlice = 100000;
+    int interruptRate = 5;
 
     if(argc < 2)
     {
-        printf("Usage: %s nproc [timeslice=%d]\n", argv[0], timeSlice);
+        printf("Usage: %s nproc [interruptRate=%d]\n", argv[0], interruptRate);
         return 0;
     }
 
     nproc = atoi(argv[1]);
 
     if(argc == 3)
-        timeSlice = atoi(argv[2]);
+        interruptRate = atoi(argv[2]);
 
     SchedTest st(ncpu);
     std::list<int> procs;
     for(int iproc = 0; iproc < nproc; iproc++)
-        procs.push_back(st.createProcess(0));
+        procs.push_back(st.createProcess(0, interruptRate));
 
     while(!procs.empty())
     {

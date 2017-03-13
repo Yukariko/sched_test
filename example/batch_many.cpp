@@ -13,11 +13,12 @@ int main(int argc, char **argv)
 {
     int ncpu;
     int nproc;
+    int interruptRate = 5;
     int timeSlice = 100000;
 
     if(argc < 3)
     {
-        printf("Usage: %s ncpu nproc\n", argv[0]);
+        printf("Usage: %s ncpu nproc [interruptRate=%d]\n", argv[0], interruptRate);
         return 0;
     }
 
@@ -25,13 +26,13 @@ int main(int argc, char **argv)
     nproc = atoi(argv[2]);
 
     if(argc == 4)
-        timeSlice = atoi(argv[3]);
+        interruptRate = atoi(argv[3]);
 
     SchedTest st(ncpu);
 
     std::vector<std::queue<int>> cpus(ncpu);
     for(int iproc = 0; iproc < nproc; iproc++)
-        cpus[iproc % ncpu].push(st.createProcess(iproc % ncpu));
+        cpus[iproc % ncpu].push(st.createProcess(iproc % ncpu, interruptRate));
 
     for(int icpu = 0; icpu < ncpu && icpu < nproc; icpu++)
         st.setFirst(icpu, timeSlice);

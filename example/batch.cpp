@@ -11,21 +11,22 @@ int main(int argc, char **argv)
     int ncpu = 1;
     int nproc;
     int timeSlice = 100000;
+    int interruptRate = 5;
 
     if(argc < 2)
     {
-        printf("Usage: %s nproc\n", argv[0]);
+        printf("Usage: %s nproc [interruptRate=%d]\n", argv[0], interruptRate);
         return 0;
     }
 
     nproc = atoi(argv[1]);
 
     if(argc == 3)
-        timeSlice = atoi(argv[2]);
+        interruptRate = atoi(argv[2]);
 
     SchedTest st(ncpu);
     for(int iproc = 0; iproc < nproc; iproc++)
-        st.createProcess(0);
+        st.createProcess(0, interruptRate);
 
     for(int iproc = 0; iproc < nproc; iproc++)
     {
